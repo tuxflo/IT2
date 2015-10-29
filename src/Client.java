@@ -9,6 +9,7 @@ import java.net.*;
 import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
+
 import javax.swing.*;
 import javax.swing.Timer;
 
@@ -150,18 +151,16 @@ public class Client{
   class setupButtonListener implements ActionListener{
     public void actionPerformed(ActionEvent e){
 
-      //System.out.println("Setup Button pressed !");      
+      System.out.println("Setup Button pressed !");      
 
       if (state == INIT) 
 	{
 	  //Init non-blocking RTPsocket that will be used to receive data
 	  try{
-	    //construct a new DatagramSocket to receive RTP packets from the server, on port RTP_RCV_PORT
-	    //RTPsocket = ...
-
-	    //set TimeOut value of the socket to 5msec.
-	    //....
-
+		    //construct a new DatagramSocket to receive RTP packets from the server, on port RTP_RCV_PORT
+		  DatagramSocket RTPSocket = new DatagramSocket(RTP_RCV_PORT);
+		  
+		  RTPSocket.setSoTimeout(5);
 	  }
 	  catch (SocketException se)
 	    {
@@ -384,17 +383,29 @@ public class Client{
   {
     try{
       //Use the RTSPBufferedWriter to write to the RTSP socket
+  	  //SETUP movie.mjpeg RTSP/1.0
+  	  //Transport: rtp/udp; compression; port=RTP_RCV_PORT; mode=PLAY
+    	
+    	//write the request line:
+    	System.out.println(request_type + " " + VideoFileName + " RTSP/1.0");
+    	
+    	RTSPBufferedWriter.write(request_type + " " + VideoFileName + " RTSP/1.0" + CRLF);
 
-      //write the request line:
-      //RTSPBufferedWriter.write(...);
-
-      //write the CSeq line: 
-      //......
-
-      //check if request_type is equal to "SETUP" and in this case write the Transport: line advertising to the server the port used to receive the RTP packets RTP_RCV_PORT
-      //if ....
-      //otherwise, write the Session line from the RTSPid field
-      //else ....
+      //write the CSeq line:
+    	System.out.println("CSeq: " + RTSPSeqNb);
+    	RTSPBufferedWriter.write("CSeq: " + RTSPSeqNb +  CRLF);
+    	
+    	//check if request_type is equal to "SETUP" and in this case write the Transport: line advertising to the server the port used to receive the RTP packets RTP_RCV_PORT
+    	if(request_type.equals("SETUP"))
+    	{
+    		//System.out.println("Transport: rtp/udp; compression; port=" + RTP_RCV_PORT + "; mode=PLAY");
+    		RTSPBufferedWriter.write("Transport: RTP/UDP; client_port= " + RTP_RCV_PORT + CRLF);
+    	}
+        //otherwise, write the Session line from the RTSPid field
+    	else
+    	{
+    		RTSPBufferedWriter.write("Session: " + RTSPid + CRLF);
+    	}
 
       RTSPBufferedWriter.flush();
     }
