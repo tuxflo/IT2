@@ -51,7 +51,15 @@ public class RTPpacket{
     //.............
     //fill the header array of byte with RTP header fields
 
-    //header[0] = ...
+    header[0] = (byte) (Version  << (7 - 0));
+    header[0] = (byte) (Padding  << (7 - 2));
+    header[0] = (byte) (Extension  << (7 - 3));
+    header[0] = (byte) (CC  << (7 - 4));
+    header[1] = (byte) (Marker  << (7 - 0));
+    header[1] = (byte) (PType  << (7 - 1));
+    header[2] =
+    		
+
     // .....
  
 
