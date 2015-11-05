@@ -158,9 +158,9 @@ public class Client{
 	  //Init non-blocking RTPsocket that will be used to receive data
 	  try{
 		    //construct a new DatagramSocket to receive RTP packets from the server, on port RTP_RCV_PORT
-		  DatagramSocket RTPSocket = new DatagramSocket(RTP_RCV_PORT);
+		  RTPsocket = new DatagramSocket(RTP_RCV_PORT);
 		  
-		  RTPSocket.setSoTimeout(5);
+		  RTPsocket.setSoTimeout(5);
 	  }
 	  catch (SocketException se)
 	    {
@@ -180,8 +180,8 @@ public class Client{
 	  else 
 	    {
 	      //change RTSP state and print new state 
-	      //state = ....
-	      //System.out.println("New RTSP state: ....");
+	      state = READY;
+	      System.out.println("New RTSP state: READY" + state);
 	    }
 	}//else if state != INIT then do nothing
     }
@@ -192,13 +192,12 @@ public class Client{
   class playButtonListener implements ActionListener {
     public void actionPerformed(ActionEvent e){
 
-      //System.out.println("Play Button pressed !"); 
+      System.out.println("Play Button pressed !"); 
 
       if (state == READY) 
 	{
 	  //increase RTSP sequence number
-	  //.....
-
+	  RTSPSeqNb++;
 
 	  //Send PLAY message to the server
 	  send_RTSP_request("PLAY");
@@ -209,8 +208,8 @@ public class Client{
 	  else 
 	    {
 	      //change RTSP state and print out new state
-	      //.....
-	      // System.out.println("New RTSP state: ...")
+	      state = PLAYING;
+	      System.out.println("New RTSP state: PLAYING (" + state + ") ");
 
 	      //start the timer
 	      timer.start();
@@ -230,8 +229,7 @@ public class Client{
       if (state == PLAYING) 
 	{
 	  //increase RTSP sequence number
-	  //........
-
+    	  RTSPSeqNb += 1;
 	  //Send PAUSE message to the server
 	  send_RTSP_request("PAUSE");
 	
@@ -241,8 +239,8 @@ public class Client{
 	  else 
 	    {
 	      //change RTSP state and print out new state
-	      //........
-	      //System.out.println("New RTSP state: ...");
+		  state = READY;
+	      System.out.println("New RTSP state: READY");
 	      
 	      //stop the timer
 	      timer.stop();
@@ -260,8 +258,7 @@ public class Client{
       //System.out.println("Teardown Button pressed !");  
 
       //increase RTSP sequence number
-      // ..........
-      
+      RTSPSeqNb++;
 
       //Send TEARDOWN message to the server
       send_RTSP_request("TEARDOWN");
@@ -272,8 +269,8 @@ public class Client{
       else 
 	{     
 	  //change RTSP state and print out new state
-	  //........
-	  //System.out.println("New RTSP state: ...");
+    	  state = INIT;
+	  System.out.println("New RTSP state: INIT");
 
 	  //stop the timer
 	  timer.stop();
